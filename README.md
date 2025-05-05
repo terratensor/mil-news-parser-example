@@ -44,12 +44,42 @@ venv\Scripts\activate # Windows
 
 2. Запустите пример:
 ```bash
-python example.py
+python example.py --url "https://mil.ru/news/e0e4b7d0-ef73-42a7-945c-da4369542ee0"
+# или
+NEWS_URL="https://mil.ru/news/e0e4b7d0-ef73-42a7-945c-da4369542ee0" python example.py
 ```
 
-Или используйте в своем коде:
-```python
-from parser.news_parser import MilNewsParser
 
-parser = MilNewsParser()
-news_data = parser.parse_news("https://mil.ru/news/...")
+## Инструкция по сборке:
+
+### 1. Соберите образ:
+
+```bash
+docker build -t mil-news-parser .
+```
+
+### 2. Если нужно очистить кеш:
+
+```bash
+docker build --no-cache -t mil-news-parser .
+```
+
+### 3. Запустите контейнер:
+
+Через аргумент
+
+```bash
+docker run --rm mil-news-parser --url "https://mil.ru/news/e0e4b7d0-ef73-42a7-945c-da4369542ee0"
+```
+
+### 4. Для локального запуска без Docker:
+
+```bash
+python example.py --url "https://mil.ru/news/e0e4b7d0-ef73-42a7-945c-da4369542ee0"
+```
+
+или
+
+```bash
+NEWS_URL="https://mil.ru/news/e0e4b7d0-ef73-42a7-945c-da4369542ee0" python example.py
+```

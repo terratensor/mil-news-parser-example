@@ -27,3 +27,14 @@ Thumbs.db
 # Playwright
 playwright-report/
 test-results/
+
+# Docker
+*.swp
+*.swo
+.dockerignore
+.env
+*.env
+
+# Временные файлы редакторов
+*~
+*.bak
