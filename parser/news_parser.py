@@ -51,23 +51,41 @@ class MilNewsParser:
         news_block = soup.find('div', class_=lambda x: x and "NewsOneContent" in x)
         if not news_block:
             return ""
-        
+
         content_div = news_block.find('div', class_='content')
         if not content_div:
             return ""
-        
+
         paragraphs = []
-        for p in content_div.find_all('p'):
-            if any(exclude in p.get_text() for exclude in [
-                "браузеры с поддержкой российских сертификатов",
-                "Вернуться на старую версию сайта"
-            ]):
-                continue
-            
-            cleaned = self._clean_paragraph(p.get_text())
-            if cleaned:
-                paragraphs.append(cleaned)
         
+        # Обрабатываем все элементы внутри content_div
+        for element in content_div.children:
+            if element.name == 'p':
+                # Обработка параграфов
+                text = self._clean_paragraph(element.get_text())
+                if text and not any(exclude in text for exclude in [
+                    "браузеры с поддержкой российских сертификатов",
+                    "Вернуться на старую версию сайта"
+                ]):
+                    paragraphs.append(text)
+            
+            elif element.name in ['ul', 'ol']:
+                # Обработка списков
+                list_items = []
+                for li in element.find_all('li', recursive=False):
+                    li_text = self._clean_paragraph(li.get_text())
+                    if li_text:
+                        list_items.append(f"• {li_text}")
+                
+                if list_items:
+                    paragraphs.append("\n".join(list_items))
+            
+            elif element.name == 'div' and element.get('class') == ['content']:
+                # Обработка вложенного контента
+                nested_content = self._extract_news_content(element.parent)
+                if nested_content:
+                    paragraphs.append(nested_content)
+
         return "\n\n".join(paragraphs)
 
     def _clean_text(self, text):
